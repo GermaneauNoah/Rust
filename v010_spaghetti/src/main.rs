@@ -1,6 +1,7 @@
 
-use std::collections::{BTreeMap as Map, HashSet};
+use std::collections::HashSet;
 use tokio::io::{AsyncBufReadExt, BufReader};
+use v010_spaghetti::{initialiser_scores, obtenir_candidats, enregistrer_vote};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -8,14 +9,8 @@ async fn main() -> anyhow::Result<()> {
     let reader = BufReader::new(stdin);
     let mut lines = reader.lines();
     let mut votants: Vec<String> = Vec::new();
-    let mut scores: Map<String, i32> = Map::from([
-        ("alice".to_string(), 0),
-        ("bob".to_string(), 0),
-        ("charlie".to_string(), 0),
-        ("bill".to_string(), 0),
-        ("bao".to_string(), 0),
-    ]);
-    let candidats: Vec<String> = vec!["alice".to_string(), "bob".to_string(), "charlie".to_string(), "bill".to_string(), "bao".to_string()];
+    let mut scores = initialiser_scores();
+    let candidats = obtenir_candidats();
     let mut votants_ayant_votes: HashSet<String> = HashSet::new();
     let mut votes_blancs = 0;
     let mut votes_nuls = 0;
@@ -53,19 +48,22 @@ async fn main() -> anyhow::Result<()> {
                         println!("Quel candidat choisissez-vous? (laisser vide pour vote blanc)");
                         println!("{}", candidats.join(", "));
                         if let Some(candidat_line) = lines.next_line().await? {
-                            let candidat = candidat_line.trim().to_lowercase();
+                            let resultat = enregistrer_vote(
+                                candidat_line.trim(),
+                                &mut scores,
+                                &mut votes_blancs,
+                                &mut votes_nuls,
+                                &candidats,
+                            );
                             
-                            if candidat.is_empty() {
-                                votes_blancs += 1;
-                                println!("Vote blanc enregistré pour {}.", nom_votant);
-                            } else if scores.contains_key(&candidat) {
-                                if let Some(score) = scores.get_mut(&candidat) {
-                                    *score += 1;
+                            match resultat.as_str() {
+                                "blanc" => println!("Vote blanc enregistré pour {}.", nom_votant),
+                                "nul" => println!("Vote nul enregistré pour {}.", nom_votant),
+                                s if s.starts_with("valid:") => {
+                                    let candidat = &s[6..];
+                                    println!("Vote pour {} enregistré pour {}.", candidat, nom_votant);
                                 }
-                                println!("Vote pour {} enregistré pour {}.", candidat, nom_votant);
-                            } else {
-                                votes_nuls += 1;
-                                println!("Vote nul enregistré pour {}.", nom_votant);
+                                _ => {}
                             }
                             
                             votants_ayant_votes.insert(nom_votant);

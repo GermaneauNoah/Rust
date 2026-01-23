@@ -3,6 +3,14 @@ name = "v010_spaghetti"
 version = "0.1.0"
 edition = "2024"
 
+[lib]
+name = "v010_spaghetti"
+path = "src/lib.rs"
+
+[[bin]]
+name = "v010_spaghetti"
+path = "src/main.rs"
+
 [dependencies]
 anyhow = "1.0"
 tokio = { version = "1.37", features = ["full"] }
