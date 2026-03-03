@@ -1,15 +1,15 @@
 [package]
-name = "v040_memory"
+name = "v041_file"
 description = ""
 version = "0.1.0"
 edition = "2024"
 
 [lib]
-name = "v040_memory"
+name = "v041_file"
 path = "src/lib.rs"
 
 [[bin]]
-name = "v040_memory"
+name = "v041_file"
 path = "src/main.rs"
 
 [dependencies]
@@ -17,7 +17,9 @@ anyhow = "1.0"
 clap = { version = "4.5", features = ["derive"] }
 tokio = { version = "1.37", features = ["full"] }
 async-trait = "0.1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 
 [dev-dependencies]
-v030_domain = { path = "../v030_domain" }
+v041_file = { path = "../v041_file" }
 

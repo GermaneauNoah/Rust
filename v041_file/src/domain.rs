@@ -20,11 +20,13 @@ pub struct Scoreboard{
     pub invalid_score: Score,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BallotPaper {
     pub voter: Voter,
     pub choice: Option<Candidate>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum VoteOutcome {
     AcceptedVote(Voter, Candidate),
     BlankVote(Voter),
@@ -85,6 +87,43 @@ impl Votingmachine {
 
     pub fn get_voters(&self) -> &AttendencesSheet {
         &self.voters
+    }
+
+    pub fn get_voters_who_voted(&self) -> &Set<Voter> {
+        &self.voters_who_voted
+    }
+
+    pub fn get_valid_candidates(&self) -> &Set<Candidate> {
+        &self.valid_candidates
+    }
+
+    pub fn recover_from(voters: AttendencesSheet, scoreboard: Scoreboard) -> Self {
+        let valid_candidates = scoreboard
+            .scores
+            .keys()
+            .cloned()
+            .collect::<Set<Candidate>>();
+
+        Self {
+            voters,
+            voters_who_voted: Set::new(),
+            scoreboard,
+            valid_candidates,
+        }
+    }
+
+    pub fn from_parts(
+        voters: AttendencesSheet,
+        voters_who_voted: Set<Voter>,
+        scoreboard: Scoreboard,
+        valid_candidates: Set<Candidate>,
+    ) -> Self {
+        Self {
+            voters,
+            voters_who_voted,
+            scoreboard,
+            valid_candidates,
+        }
     }
 
     pub fn vote(&mut self, ballot_paper: BallotPaper) -> VoteOutcome {
