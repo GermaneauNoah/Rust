@@ -1,6 +1,9 @@
 use tokio::io::{AsyncBufReadExt, BufReader};
-use crate::configuration::Configuration;
+use crate::configuration::{Configuration, StorageType};
 use crate::domain::{Votingmachine, Candidate, Voter, BallotPaper, VoteOutcome};
+use crate::storage::Strorage;
+use crate::storages::file::FileStore;
+use crate::storages::memory::MemoryStore;
 
 fn create_voting_machine(configuration: &Configuration) -> Votingmachine {
     let candidats: Vec<Candidate> = configuration.candidats_reels()
@@ -10,15 +13,16 @@ fn create_voting_machine(configuration: &Configuration) -> Votingmachine {
     Votingmachine::new(candidats)
 }
 
-pub async fn run_app(configuration: Configuration) -> anyhow::Result<()> {
+pub async fn handle_lines<Store: Strorage>(configuration: Configuration) -> anyhow::Result<()> {
     let stdin = tokio::io::stdin();
     let reader = BufReader::new(stdin);
     let mut lines = reader.lines();
-    
-    let mut voting_machine = create_voting_machine(&configuration);
+
+    let initial_machine = create_voting_machine(&configuration);
+    let mut store = Store::new(initial_machine).await?;
     let candidats_affichage = configuration.candidats_affichage();
     let mut continuer = true;
-    
+
     while continuer {
         println!("Saisis une commande (voter, votants, scores):");
 
@@ -46,11 +50,10 @@ pub async fn run_app(configuration: Configuration) -> anyhow::Result<()> {
 
                     println!("Quel candidat choisissez-vous? (laisser vide pour vote blanc)");
                     println!("{}", candidats_affichage.join(", "));
-                    
+
                     if let Some(candidat_line) = lines.next_line().await? {
                         let candidat_input = candidat_line.trim();
-                        
-                        // Créer le bulletin de vote
+
                         let ballot_paper = if candidat_input.is_empty() {
                             BallotPaper {
                                 voter,
@@ -62,10 +65,11 @@ pub async fn run_app(configuration: Configuration) -> anyhow::Result<()> {
                                 choice: Some(Candidate(candidat_input.to_lowercase())),
                             }
                         };
-                        
-                        // Enregistrer le vote
+
+                        let mut voting_machine = store.get_voting_machine().await?;
                         let outcome = voting_machine.vote(ballot_paper);
-                        
+                        store.put_voting_machine(voting_machine).await?;
+
                         match outcome {
                             VoteOutcome::BlankVote(v) => {
                                 println!("Vote blanc enregistré pour {}.", v.0);
@@ -84,6 +88,7 @@ pub async fn run_app(configuration: Configuration) -> anyhow::Result<()> {
                 }
             }
             "votants" => {
+                let voting_machine = store.get_voting_machine().await?;
                 println!("");
                 println!("-------------------");
                 println!("Liste des votants:");
@@ -94,6 +99,7 @@ pub async fn run_app(configuration: Configuration) -> anyhow::Result<()> {
                 println!("");
             }
             "scores" => {
+                let voting_machine = store.get_voting_machine().await?;
                 let scoreboard = voting_machine.get_scoreboard();
                 println!("");
                 println!("-------------------");
@@ -129,4 +135,11 @@ pub async fn run_app(configuration: Configuration) -> anyhow::Result<()> {
     }
 
     Ok(())
+}
+
+pub async fn run_app(configuration: Configuration) -> anyhow::Result<()> {
+    match configuration.storage() {
+        StorageType::File => handle_lines::<FileStore>(configuration).await,
+        StorageType::Memory => handle_lines::<MemoryStore>(configuration).await,
+    }
 }

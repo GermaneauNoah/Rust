@@ -1,10 +1,18 @@
 use clap::Parser;
+use clap::ValueEnum;
+
+#[derive(Debug, Clone, Copy, ValueEnum)]
+pub enum StorageType {
+    File,
+    Memory,
+}
 
 pub const PSEUDO_CANDIDATS: [&str; 2] = ["blanc", "nul"];
 
 #[derive(Debug, Clone)]
 pub struct Configuration {
     candidats: Vec<String>,
+    storage: StorageType,
 }
 
 #[derive(Parser, Debug)]
@@ -18,15 +26,23 @@ pub struct Parameters {
         required = true
     )]
     pub candidates: Vec<String>,
+
+    #[arg(
+        short = 's',
+        long = "storage",
+        value_name = "STORAGE",
+        default_value = "memory"
+    )]
+    pub storage: StorageType,
 }
 
 pub fn charger_configuration() -> Configuration {
     let params = Parameters::parse();
-    Configuration::new(params.candidates)
+    Configuration::new(params.candidates, params.storage)
 }
 
 impl Configuration {
-    pub fn new(candidats: Vec<String>) -> Self {
+    pub fn new(candidats: Vec<String>, storage: StorageType) -> Self {
         let mut uniques: Vec<String> = Vec::new();
         for candidat in candidats {
             let candidat = candidat.trim().to_lowercase();
@@ -40,7 +56,11 @@ impl Configuration {
                 uniques.push(candidat);
             }
         }
-        Self { candidats: uniques }
+        Self { candidats: uniques, storage }
+    }
+
+    pub fn storage(&self) -> StorageType {
+        self.storage
     }
 
     pub fn candidats_reels(&self) -> Vec<String> {
