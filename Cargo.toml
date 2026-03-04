@@ -7,5 +7,6 @@ members = ["v010_spaghetti",
            "v021_app_builder",
            "v030_domain",
            "v040_memory",
-           "v041_file"
+           "v041_file",
+           "v050_use_case"
 ]

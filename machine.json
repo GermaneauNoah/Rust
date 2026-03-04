@@ -1,0 +1,14 @@
+{
+  "voters": [
+    "alice",
+    "bob"
+  ],
+  "scoreboard": {
+    "scores": {
+      "alice": 1,
+      "bob": 0
+    },
+    "blank_score": 1,
+    "invalid_score": 0
+  }
+}

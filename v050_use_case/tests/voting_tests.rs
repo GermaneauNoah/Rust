@@ -1,5 +1,5 @@
-use v040_memory::{initialiser_scores, obtenir_candidats, est_candidat_valide, enregistrer_vote};
-use v040_memory::configuration::Configuration;
+use v050_use_case::{initialiser_scores, obtenir_candidats, est_candidat_valide, enregistrer_vote};
+use v050_use_case::configuration::{Configuration, StorageType};
 
 fn configuration_test() -> Configuration {
     Configuration::new(vec![
@@ -8,7 +8,7 @@ fn configuration_test() -> Configuration {
         "charlie".to_string(),
         "bill".to_string(),
         "bao".to_string(),
-    ])
+    ], StorageType::Memory)
 }
 
 #[test]
