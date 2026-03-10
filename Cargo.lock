@@ -460,6 +460,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "v060_text_interfaces"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "clap",
+ "serde",
+ "serde_json",
+ "tokio",
+ "v060_text_interfaces",
+]
+
+[[package]]
 name = "wasi"
 version = "0.11.1+wasi-snapshot-preview1"
 source = "registry+https://github.com/rust-lang/crates.io-index"

@@ -1,14 +1,19 @@
 {
   "voters": [
+    "",
     "alice",
-    "bob"
+    "bob",
+    "jean",
+    "jean pierre paul",
+    "pierre",
+    "pole"
   ],
   "scoreboard": {
     "scores": {
       "alice": 1,
-      "bob": 0
+      "bob": 2
     },
-    "blank_score": 1,
-    "invalid_score": 0
+    "blank_score": 3,
+    "invalid_score": 2
   }
 }
