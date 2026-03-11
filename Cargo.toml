@@ -9,5 +9,6 @@ members = ["v010_spaghetti",
            "v040_memory",
            "v041_file",
            "v050_use_case",
-           "v060_text_interfaces"
+           "v060_text_interfaces",
+           "v070_cli_services"
 ]
