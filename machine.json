@@ -1,10 +1,12 @@
 {
   "voters": [
+    "billy",
     "naylik",
     "noah",
     "noé"
   ],
   "voters_who_voted": [
+    "billy",
     "naylik",
     "noah",
     "noé"
@@ -16,7 +18,7 @@
       "bao": 1,
       "billy": 0,
       "bob": 0,
-      "jean": 0,
+      "jean": 1,
       "noé": 0
     },
     "blank_score": 0,
