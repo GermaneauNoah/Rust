@@ -1,0 +1,28 @@
+[package]
+name = "v080_html"
+description = ""
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "v080_html"
+path = "src/lib.rs"
+
+[[bin]]
+name = "v080_html"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1.0"
+clap = { version = "4.5", features = ["derive"] }
+tokio = { version = "1.37", features = ["full"] }
+async-trait = "0.1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+axum = "0.8.8"
+maud = {version = "0.27", features = ["axum"]}
+thiserror = "2.0.18"
+
+[dev-dependencies]
+v080_html = { path = "../v080_html" }
+

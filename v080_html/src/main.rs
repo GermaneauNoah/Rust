@@ -1,6 +1,6 @@
 
-use v070_cli_services::configuration::charger_configuration;
-use v070_cli_services::app_builder::run_app;
+use v080_html::configuration::charger_configuration;
+use v080_html::app_builder::run_app;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
