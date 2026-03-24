@@ -12,5 +12,6 @@ members = ["v010_spaghetti",
            "v060_text_interfaces",
            "v070_cli_services",
            "v071_tcp_services",
-           "v080_html"
+           "v080_html",
+           "v090_json"
 ]
